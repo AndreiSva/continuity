@@ -1,5 +1,5 @@
 {
-  description = "A flake for building lynn, the strange life simulator";
+  description = "A flake for building continuity, the strange life simulator";
 
   inputs.flake-utils.url = "github:numtide/flake-utils";
   inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
@@ -16,7 +16,12 @@
       in
       {
         packages = {
-          myapp = mkPoetryApplication { projectDir = self; };
+          myapp = mkPoetryApplication {
+            projectDir = self;
+            packages = [
+              pkgs.python3Packages.pygame
+            ];
+          };
           default = self.packages.${system}.myapp;
         };
 
