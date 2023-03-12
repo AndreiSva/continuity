@@ -1,26 +1,17 @@
 import pygame
 import numpy
 
-def prog_start():
-    print("program has started")
+import renderer
 
+def main():
     pygame.init()
+    screen = pygame.display.set_mode([500, 500])
 
-    pygame.display.set_caption('Quick Start')
-    window_surface = pygame.display.set_mode((800, 600))
+    main_renderer = renderer.Renderer(screen, 123)
+    
+    running = True
+    while running:
+        main_render.render()
 
-    background = pygame.Surface((800, 600))
-    background.fill(pygame.Color('#000000'))
-
-    is_running = True
-
-    while is_running:
-
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                is_running = False
-                 
-                window_surface.blit(background, (0, 0))
-                 
-                pygame.display.update()
+pygame.quit()
 
