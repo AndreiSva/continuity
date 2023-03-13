@@ -21,8 +21,8 @@ def main():
                     main_renderer.camera.scale /= 1.5
            elif event.type == pygame.MOUSEMOTION and pygame.mouse.get_pressed()[2]:
                 mouse_dx, mouse_dy = event.rel
-                main_renderer.camera.xpos += mouse_dx
-                main_renderer.camera.ypos += mouse_dy
+                main_renderer.camera.xpos += mouse_dx / main_renderer.camera.scale
+                main_renderer.camera.ypos += mouse_dy / main_renderer.camera.scale
                 
         main_renderer.render_screen()
         pygame.display.flip()
