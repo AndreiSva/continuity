@@ -15,10 +15,11 @@ def main():
            if event.type == pygame.QUIT:
                 running = False
            elif event.type == pygame.MOUSEBUTTONDOWN:
-                if event.button == 4:
-                    main_renderer.camera.scale *= 1.5
-                elif event.button == 5:
-                    main_renderer.camera.scale /= 1.5
+               x, y = pygame.mouse.get_pos()
+               if event.button == 4:
+                   main_renderer.camera.scale *= 1.5
+               elif event.button == 5:
+                   main_renderer.camera.scale /= 1.5
            elif event.type == pygame.MOUSEMOTION and pygame.mouse.get_pressed()[2]:
                 mouse_dx, mouse_dy = event.rel
                 main_renderer.camera.xpos += mouse_dx / main_renderer.camera.scale
