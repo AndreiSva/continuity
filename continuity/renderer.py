@@ -2,9 +2,11 @@ import pygame
 import random
 from dataclasses import dataclass
 import continuity.universe as universe
+import numpy
 
 class SimEvent:
     SIMTICK = pygame.USEREVENT + 1
+    PHYSICSTICK = pygame.USEREVENT + 2
 
 class Renderer:
     def __init__(self, screen):
@@ -52,6 +54,7 @@ class Renderer:
     
         epoch = 0
         pygame.time.set_timer(SimEvent.SIMTICK, 1000)
+        pygame.time.set_timer(SimEvent.PHYSICSTICK, 10)
 
         self.entities = universe.populate(universe.Entity, 50, 20, self.screen_size)
         self.population = len(self.entities)
@@ -64,8 +67,33 @@ class Renderer:
                     self.meta["mousepos"] = f"({x}, {y})"
                 elif event.type == SimEvent.SIMTICK:
                     epoch += 1
+                    for entity in self.entities:
+                        entity.live()
+                        if entity.energy <= 0:
+                            self.entities.append(universe.Pellet(entity.position))
+                            self.entities.remove(entity)
                     self.spawn_food(10)
-                
+                elif event.type == SimEvent.PHYSICSTICK:
+                    for entity in self.entities:
+                        if not isinstance(entity, universe.Pellet):
+                            entity.position[0] += (entity.velocity[0] * clock.get_time())
+                            entity.position[1] += (entity.velocity[1] * clock.get_time())
+
+                        if abs(entity.velocity[0]) < 0.3:
+                            entity.velocity[0] = 0
+                        if abs(entity.velocity[1]) < 0.3:
+                            entity.velocity[1] = 0
+                        entity.velocity[0] -= ((entity.size * 9.8) * 0.001) / entity.size
+                        entity.velocity[1] -= ((entity.size * 9.8) * 0.001) / entity.size
+
+                for entity in self.entities:
+                    if not isinstance(entity, universe.Pellet):
+                        for food in self.entities:
+                            if isinstance(food, universe.Pellet):
+                                if entity.is_colliding(food):
+                                    entity.energy += 1
+                                    self.entities.remove(food)
+                    
                 self.meta["epoch"] = epoch
                 self.meta["population"] = self.population
                 self.meta["fps"] = clock.get_fps()
