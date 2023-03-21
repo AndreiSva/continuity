@@ -12,5 +12,5 @@ class Neuron:
     activation: float
     connections: list
 
-def feedforward(network):
+def propagate(network):
     pass
