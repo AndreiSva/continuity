@@ -9,7 +9,7 @@ def activation(x):
 
 @dataclass
 class Neuron:
-    activation: float
+    value: float
     connections: list
 
 def propagate(network):
