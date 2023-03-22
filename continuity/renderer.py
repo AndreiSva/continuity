@@ -73,11 +73,20 @@ class Renderer:
                         if entity.energy <= 0:
                             self.pellets.append(universe.Pellet(entity.position))
                             self.entities.remove(entity)
-                    self.spawn_food(10)
+                    if len(self.pellets) < 200:
+                        self.spawn_food(10)
                 elif event.type == SimEvent.PHYSICSTICK:
                     for entity in self.entities:
                         entity.position[0] += (entity.velocity[0] * clock.get_time())
                         entity.position[1] += (entity.velocity[1] * clock.get_time())
+
+                        if entity.position[0] + entity.size >= self.screen_size or entity.position[0] - entity.size <= 0:
+                            entity.velocity[0] *= -1
+                            continue
+
+                        if entity.position[1] + entity.size >= self.screen_size or entity.position[1] - entity.size <= 0:
+                            entity.velocity[1] *= -1
+                            continue
                         
                         if abs(entity.velocity[0]) <= 0.1:
                             entity.velocity[0] = 0
@@ -89,8 +98,6 @@ class Renderer:
                             
                         mulx = -1 if entity.velocity[0] < 0 else 1
                         muly = -1 if entity.velocity[1] < 0 else 1
-                        #entity.velocity[0] *= 0.99 * entity.size
-                        #entity.velocity[1] *= 0.99 * entity.size
                         
                         entity.velocity[0] -= (entity.size * 9.8 * 0.0001) * mulx
                         entity.velocity[1] -= (entity.size * 9.8 * 0.0001) * muly
@@ -103,7 +110,8 @@ class Renderer:
                             self.pellets.remove(entity2)
                     
                 self.meta["epoch"] = epoch
-                self.meta["population"] = self.population
+                self.meta["population"] = len(self.entities)
+                self.meta["food"] = len(self.pellets)
                 self.meta["fps"] = clock.get_fps()
                     
             self.render_screen()

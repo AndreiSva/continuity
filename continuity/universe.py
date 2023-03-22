@@ -10,10 +10,6 @@ class Entity:
         self.position = position
         self.velocity = [0.0, 0.0]
     def is_colliding(self, other):
-        # Wall
-        if type(other) == float:
-            return not ((self.position[0] + self.size > other) or (self.position[1] + self.size > other))
-        
         distance = math.sqrt((self.position[0] - other.position[0])**2 + (self.position[1] - other.position[1])**2)
         if distance < self.size + other.size:
             return True
@@ -27,7 +23,7 @@ class Pellet(Entity):
         super().__init__(position, (0, 255, 0), 2)
     def live(self):
         pass
-
+    
 def populate(e, n, distance, size):
     x = []
     for i in range(n):
