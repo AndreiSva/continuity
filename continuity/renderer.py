@@ -79,9 +79,9 @@ class Renderer:
                         entity.position[0] += (entity.velocity[0] * clock.get_time())
                         entity.position[1] += (entity.velocity[1] * clock.get_time())
                         
-                        if entity.velocity[0] <= 0.1:
+                        if abs(entity.velocity[0]) <= 0.1:
                             entity.velocity[0] = 0
-                        if entity.velocity[1] <= 0.1:
+                        if abs(entity.velocity[1]) <= 0.1:
                             entity.velocity[1] = 0
 
                         if entity.velocity[0] == 0 and entity.velocity[1] == 0:
@@ -92,8 +92,8 @@ class Renderer:
                         #entity.velocity[0] *= 0.99 * entity.size
                         #entity.velocity[1] *= 0.99 * entity.size
                         
-                        entity.velocity[0] -= (((entity.size * 9.8) * 0.001) / entity.size) * mulx
-                        entity.velocity[1] -= (((entity.size * 9.8) * 0.001) / entity.size) * muly
+                        entity.velocity[0] -= (entity.size * 9.8 * 0.0001) * mulx
+                        entity.velocity[1] -= (entity.size * 9.8 * 0.0001) * muly
 
 
                 for entity in self.entities:
