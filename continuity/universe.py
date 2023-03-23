@@ -16,8 +16,8 @@ class Entity:
             for gene in child_genome.values():
                 if random.randint(1, mutation_rate) == 1:
                     if type(gene) == tuple:
-                        for color in gene:
-                            color += random.randint(-15, 15)
+                        color_index = random.randint(0,2)
+                        gene[color_index] += random.randint(-15, 15)
                     else:
                         gene += random.randint(-5, 5)
         child = Entity(self.position.copy(), child_genome["color"], child_genome["size"])
