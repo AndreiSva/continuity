@@ -58,6 +58,8 @@ class Renderer:
         pygame.time.set_timer(SimEvent.PHYSICSTICK, 10)
 
         self.entities = universe.populate(universe.Entity, 50, 20, self.screen_size)
+        #self.entities = universe.populate(universe.Entity, 1, 20, self.screen_size)
+        self.spawn_food(50)
         self.population = len(self.entities)
         while running:
             for event in pygame.event.get():
@@ -73,19 +75,38 @@ class Renderer:
                         if entity.energy <= 0:
                             self.pellets.append(universe.Pellet(entity.position))
                             self.entities.remove(entity)
+                        elif entity.energy >= 50:
+                            self.entities.append(entity.reproduce(10))
+                            # entity.energy -= 10
                     if len(self.pellets) < 200:
-                        self.spawn_food(10)
+                        self.spawn_food(40)
                 elif event.type == SimEvent.PHYSICSTICK:
                     for entity in self.entities:
                         entity.position[0] += (entity.velocity[0] * clock.get_time())
                         entity.position[1] += (entity.velocity[1] * clock.get_time())
 
-                        if entity.position[0] + entity.size >= self.screen_size or entity.position[0] - entity.size <= 0:
-                            entity.velocity[0] *= -1
+                        if random.randint(1, 5) == 3:
+                            entity.velocity[0] += 0.2
+                        if random.randint(1, 5) == 3:
+                            entity.velocity[0] -= 0.2
+                        if random.randint(1, 5) == 3:
+                            entity.velocity[1] += 0.2
+                        if random.randint(1, 5) == 3:
+                            entity.velocity[1] -= 0.2
+                        
+
+                        if entity.position[0] + entity.size >= self.screen_size:
+                            entity.velocity[0] = -abs(entity.velocity[0])
+                            continue
+                        elif entity.position[0] - entity.size <= 0:
+                            entity.velocity[0] = abs(entity.velocity[0])
                             continue
 
-                        if entity.position[1] + entity.size >= self.screen_size or entity.position[1] - entity.size <= 0:
-                            entity.velocity[1] *= -1
+                        if entity.position[1] + entity.size >= self.screen_size:
+                            entity.velocity[1] = -abs(entity.velocity[0])
+                            continue
+                        elif entity.position[1] - entity.size <= 0:
+                            entity.velocity[1] = abs(entity.velocity[0])
                             continue
                         
                         if abs(entity.velocity[0]) <= 0.1:
