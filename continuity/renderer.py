@@ -76,7 +76,7 @@ class Renderer:
                             self.pellets.append(universe.Pellet(entity.position))
                             self.entities.remove(entity)
                         elif entity.energy >= 50:
-                            self.entities.append(entity.reproduce(10))
+                            self.entities.append(entity.reproduce(3))
                             # entity.energy -= 10
                     if len(self.pellets) < 200:
                         self.spawn_food(40)

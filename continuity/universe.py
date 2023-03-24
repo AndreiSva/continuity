@@ -13,13 +13,22 @@ class Entity:
     def reproduce(self, mutation_rate):
         child_genome = self.genome.copy()
         if mutation_rate > 0:
-            for gene in child_genome.values():
+            for gene in child_genome.items():
                 if random.randint(1, mutation_rate) == 1:
-                    if type(gene) == tuple:
+                    print(gene)
+                    if type(gene[1]) == tuple:
+                        child_genome[gene[0]] = list(child_genome[gene[0]])
                         color_index = random.randint(0,2)
-                        gene[color_index] += random.randint(-15, 15)
+                        child_genome[gene[0]][color_index] += random.randint(-15, 15)
+                        if child_genome[gene[0]][color_index] < 0:
+                            child_genome[gene[0]][color_index] = 0
+                        elif child_genome[gene[0]][color_index] > 255:
+                            child_genome[gene[0]][color_index] = 255
+                        child_genome[gene[0]] = tuple(child_genome[gene[0]])
                     else:
-                        gene += random.randint(-5, 5)
+                        child_genome[gene[0]] += random.randint(-5, 5)
+                        if child_genome[gene[0]] < 0:
+                            child_genome[gene[0]] = 0
         child = Entity(self.position.copy(), child_genome["color"], child_genome["size"])
         child.energy = self.energy // 2 + 1
         self.energy //= 2 
