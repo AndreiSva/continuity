@@ -1,7 +1,7 @@
 import pygame
 import random
 from dataclasses import dataclass
-import continuity.universe as universe
+from . import universe
 import numpy
 
 class SimEvent:

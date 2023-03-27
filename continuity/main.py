@@ -1,8 +1,9 @@
 import pygame
+import argparse
 # import numpy
 
-import continuity.renderer as renderer
-import continuity.network as network
+from . import renderer
+from . import network
 
 def main():
     pygame.init()
