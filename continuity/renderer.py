@@ -52,6 +52,7 @@ class Renderer:
         
         running = True
         clock = pygame.time.Clock()
+        physics_clock = pygame.time.Clock()
     
         epoch = 0
         pygame.time.set_timer(SimEvent.SIMTICK, 1000)
@@ -76,14 +77,14 @@ class Renderer:
                             self.pellets.append(universe.Pellet(entity.position))
                             self.entities.remove(entity)
                         elif entity.energy >= 50:
-                            self.entities.append(entity.reproduce(3))
-                            # entity.energy -= 10
+                            self.entities.append(entity.reproduce(10))
+                            # entity.energy += 100
                     if len(self.pellets) < 200:
                         self.spawn_food(40)
                 elif event.type == SimEvent.PHYSICSTICK:
                     for entity in self.entities:
-                        entity.position[0] += (entity.velocity[0] * clock.get_time())
-                        entity.position[1] += (entity.velocity[1] * clock.get_time())
+                        entity.position[0] += (entity.velocity[0] * physics_clock.get_time())
+                        entity.position[1] += (entity.velocity[1] * physics_clock.get_time())
 
                         if random.randint(1, 5) == 3:
                             entity.velocity[0] += 0.2
@@ -122,6 +123,7 @@ class Renderer:
                         
                         entity.velocity[0] -= (entity.size * 9.8 * 0.0001) * mulx
                         entity.velocity[1] -= (entity.size * 9.8 * 0.0001) * muly
+                    physics_clock.tick()
 
 
                 for entity in self.entities:
