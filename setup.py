@@ -7,7 +7,7 @@ setup(name='continuity',
       packages=find_packages(),
       entry_points={
           'console_scripts': [
-              'continuity=continuity.main:prog_start'
+              'continuity=continuity.main:main'
           ],
       }
      )
