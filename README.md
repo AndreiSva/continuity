@@ -10,10 +10,10 @@ Continuity is a work in progress artificial life simulator I am developing as pa
 - [X] Creature Simulation
 - [X] Asexual Reproduction
 - [X] Genetic Mutation
+- [X] Command Line Interface
 - [ ] Checkpoints / Save files
 - [ ] Neuroevolution
-- [ ] Command Line Interface
-- [ ] Enhanced Statistics
+- [ ] Polish
 
 Running
 -------
