@@ -95,7 +95,7 @@ class Renderer:
                             self.entities.append(entity.reproduce(self.settings.mutation_chance))
                             # entity.energy += 100
                     if len(self.pellets) <= self.settings.max_food:
-                        self.spawn_food(60)
+                        self.spawn_food(40)
                 elif event.type == SimEvent.PHYSICSTICK:
                     for entity in self.entities:
                         entity.position[0] += (entity.velocity[0] * physics_clock.get_time())
