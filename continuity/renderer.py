@@ -9,9 +9,10 @@ class SimEvent:
     PHYSICSTICK = pygame.USEREVENT + 2
 
 class Renderer:
-    def __init__(self, screen):
+    def __init__(self, screen, settings):
         self.screen = screen
         self.screen_size = 1000
+        self.settings = settings
         self.population = 0
         self.pellets = []
         self.entities = []
@@ -51,6 +52,7 @@ class Renderer:
         self.font = pygame.font.SysFont("Monospace", 13)
         
         running = True
+        paused = False
         clock = pygame.time.Clock()
         physics_clock = pygame.time.Clock()
     
@@ -58,7 +60,7 @@ class Renderer:
         pygame.time.set_timer(SimEvent.SIMTICK, 1000)
         pygame.time.set_timer(SimEvent.PHYSICSTICK, 10)
 
-        self.entities = universe.populate(universe.Entity, 50, 20, self.screen_size)
+        self.entities = universe.populate(universe.Entity, self.settings.population, 20, self.screen_size)
         #self.entities = universe.populate(universe.Entity, 1, 20, self.screen_size)
         self.spawn_food(50)
         self.population = len(self.entities)
@@ -69,6 +71,19 @@ class Renderer:
                 elif event.type == pygame.MOUSEBUTTONDOWN:
                     x, y = pygame.mouse.get_pos()
                     self.meta["mousepos"] = f"({x}, {y})"
+                elif event.type == pygame.KEYDOWN:
+                    print(event)
+                    if event.key == pygame.K_p:
+                        if not paused:
+                            paused = True
+                            pygame.time.set_timer(SimEvent.SIMTICK, 0)
+                            pygame.time.set_timer(SimEvent.PHYSICSTICK, 0)
+                        else:
+                            paused = False
+                            pygame.time.set_timer(SimEvent.SIMTICK, 1000)
+                            pygame.time.set_timer(SimEvent.PHYSICSTICK, 10)
+                            physics_clock.tick()
+                            physics_clock.tick()
                 elif event.type == SimEvent.SIMTICK:
                     epoch += 1
                     for entity in self.entities:
@@ -77,10 +92,10 @@ class Renderer:
                             self.pellets.append(universe.Pellet(entity.position))
                             self.entities.remove(entity)
                         elif entity.energy >= 50:
-                            self.entities.append(entity.reproduce(10))
+                            self.entities.append(entity.reproduce(self.settings.mutation_chance))
                             # entity.energy += 100
-                    if len(self.pellets) < 200:
-                        self.spawn_food(40)
+                    if len(self.pellets) <= self.settings.max_food:
+                        self.spawn_food(60)
                 elif event.type == SimEvent.PHYSICSTICK:
                     for entity in self.entities:
                         entity.position[0] += (entity.velocity[0] * physics_clock.get_time())
@@ -139,7 +154,7 @@ class Renderer:
                     
             self.render_screen()
             pygame.display.flip()
-            clock.tick()
+            clock.tick(60)
 
         pygame.quit()
         return True

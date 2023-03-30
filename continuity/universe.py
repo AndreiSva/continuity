@@ -15,7 +15,7 @@ class Entity:
         if mutation_rate > 0:
             for gene in child_genome.items():
                 if random.randint(1, mutation_rate) == 1:
-                    print(gene)
+                    # print(gene)
                     if type(gene[1]) == tuple:
                         child_genome[gene[0]] = list(child_genome[gene[0]])
                         color_index = random.randint(0,2)
