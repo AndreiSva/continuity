@@ -4,7 +4,7 @@
   description = "A flake for building the continuity simulation";
 
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     flake-utils.url = "github:numtide/flake-utils";
   };
 
@@ -15,10 +15,10 @@
         pkgs = nixpkgs.legacyPackages.${system}; in
       {
         packages = rec {
-          continuity = pkgs.python3Packages.buildPythonPackage rec {
+          continuity = pkgs.python311Packages.buildPythonPackage rec {
             name = "continuity";
             src = ./.;
-            propagatedBuildInputs = with pkgs.python3Packages; [
+            propagatedBuildInputs = with pkgs.python311Packages; [
               numpy
               pygame
             ];
