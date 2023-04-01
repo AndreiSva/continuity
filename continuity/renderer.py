@@ -76,15 +76,15 @@ class Renderer:
                     if event.key == pygame.K_p:
                         if not paused:
                             paused = True
-                            pygame.time.set_timer(SimEvent.SIMTICK, 0)
-                            pygame.time.set_timer(SimEvent.PHYSICSTICK, 0)
+                            #pygame.time.set_timer(SimEvent.SIMTICK, 0)
+                            #pygame.time.set_timer(SimEvent.PHYSICSTICK, 0)
                         else:
                             paused = False
-                            pygame.time.set_timer(SimEvent.SIMTICK, 1000)
-                            pygame.time.set_timer(SimEvent.PHYSICSTICK, 10)
+                            #pygame.time.set_timer(SimEvent.SIMTICK, 1000)
+                            #pygame.time.set_timer(SimEvent.PHYSICSTICK, 10)
                             physics_clock.tick()
                             physics_clock.tick()
-                elif event.type == SimEvent.SIMTICK:
+                elif event.type == SimEvent.SIMTICK and not paused:
                     epoch += 1
                     for entity in self.entities:
                         entity.live()
@@ -96,7 +96,7 @@ class Renderer:
                             # entity.energy += 100
                     if len(self.pellets) <= self.settings.max_food:
                         self.spawn_food(40)
-                elif event.type == SimEvent.PHYSICSTICK:
+                elif event.type == SimEvent.PHYSICSTICK and not paused:
                     for entity in self.entities:
                         entity.position[0] += (entity.velocity[0] * physics_clock.get_time())
                         entity.position[1] += (entity.velocity[1] * physics_clock.get_time())
@@ -132,12 +132,14 @@ class Renderer:
 
                         if entity.velocity[0] == 0 and entity.velocity[1] == 0:
                             continue
-                            
-                        mulx = -1 if entity.velocity[0] < 0 else 1
-                        muly = -1 if entity.velocity[1] < 0 else 1
-                        
-                        entity.velocity[0] -= (entity.size * 9.8 * 0.0001) * mulx
-                        entity.velocity[1] -= (entity.size * 9.8 * 0.0001) * muly
+
+                        mulx = -1 if entity.velocity[0] > 0 else 1
+                        muly = -1 if entity.velocity[1] > 0 else 1
+
+                        #entity.velocity[0] += (-1 if entity.velocity[0] > 0 else 1) * entity.size * entity.velocity[0]
+                        #entity.velocity[1] += (-1 if entity.velocity[1] > 0 else 1) * entity.size * entity.velocity[1]
+                        entity.velocity[0] += (entity.size * (9.8 * 0.0001)) * mulx
+                        entity.velocity[1] += (entity.size * (9.8 * 0.0001)) * muly
                     physics_clock.tick()
 
 
