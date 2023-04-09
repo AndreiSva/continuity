@@ -18,7 +18,7 @@ class Entity:
         self.breeding_timer = 0
     def reproduce(self, mutation_rate):
         child_genome = self.genome.copy()
-        child_brain = copy.copy(self.brain)
+        child_brain = copy.deepcopy(self.brain)
         if mutation_rate > 0:
             for gene in child_genome.items():
                 if random.randint(1, mutation_rate) == 1:
@@ -33,7 +33,8 @@ class Entity:
                             child_genome[gene[0]][color_index] = 255
                         child_genome[gene[0]] = tuple(child_genome[gene[0]])
                     elif type(gene[1]) == network.Brain:
-                        child_brain.mutate()
+                        #child_brain.mutate()
+                        pass
                     else:
                         child_genome[gene[0]] += random.randint(-5, 5)
                         if child_genome[gene[0]] < 0:
@@ -51,7 +52,7 @@ class Entity:
         else:
             return False
     def live(self):
-        self.energy -= self.size / 5
+        self.energy -= self.size / 10
 
 class Pellet(Entity):
     def __init__(self, position):

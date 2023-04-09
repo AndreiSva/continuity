@@ -66,6 +66,31 @@ class Renderer:
                 text_surface_rect.right = self.screen_size
                 self.screen.blit(text_surface, (text_surface_rect.x, text_surface_rect.y + i * 20))
 
+            brain_surface = self.gen_network_surface(self.selected_entity.brain)
+            brain_surface_rect = brain_surface.get_rect()
+            brain_surface_rect.center = (self.screen_size / 2, 100)
+            self.screen.blit(brain_surface, brain_surface_rect)
+
+    def gen_network_surface(self, brain):
+        brain_surface = pygame.Surface((250, 150))
+        brain_surface.fill("grey")
+
+        neurons = {}
+
+        for i, layer in enumerate(brain.network):
+            for j, neuron in enumerate(layer):
+                color = (255 if neuron.value > 0 else 0, 0, (255 if neuron.value < 0 else 0))
+                pygame.draw.circle(brain_surface, color, (i * 80 + 40, j * 20 + 30), 10)
+                neurons[neuron] = (i * 80 + 40, j * 20 + 30)
+                if neuron.connections != None:
+                    for connection in neuron.connections:
+                        color = (255 if connection["neuron"].value > 0 else 0,0, (255 if neuron.value < 1 else 0))
+                        pygame.draw.line(brain_surface, color, (i * 80 + 40, j * 20 + 30), neurons[connection["neuron"]], width=connection["weight"])
+
+        return brain_surface
+
+        #pygame.draw.line()
+
     def main_loop(self):
         self.font = pygame.font.SysFont("Monospace", 13)
         
@@ -143,13 +168,13 @@ class Renderer:
                         jitter = random.randint(-100, 100) / 100
                         options = entity.brain.think((entity.target.position[0] - entity.position[0] + jitter, entity.target.position[1] - entity.position[1] + jitter))
                         #options = entity.brain.think((0, 0))
-                        entity.position[0] += options[0].value / 3000
-                        entity.position[1] += options[1].value / 3000
-                        entity.position[0] -= options[2].value / 3000
-                        entity.position[1] -= options[3].value / 3000
+                        entity.position[0] += options[0].value / 5000
+                        entity.position[1] += options[1].value / 5000
+                        entity.position[0] -= options[2].value / 5000
+                        entity.position[1] -= options[3].value / 5000
 
 
-                        entity.energy -= (options[0].value / 200000) + (options[2].value / 100000) + (options[1].value / 100000) + (options[3].value / 100000)
+                        entity.energy -= (options[0].value / 300000) + (options[2].value / 300000) + (options[1].value / 300000) + (options[3].value / 300000)
 
                         if entity.position[0] + entity.size >= self.screen_size:
                             #entity.velocity[0] -= 5

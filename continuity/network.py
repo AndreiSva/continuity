@@ -2,12 +2,12 @@
 from dataclasses import dataclass
 import random
 import copy
+import math
+
+random.seed(0)
 
 def activation(x):
-    if x < 0:
-        return 0
-    else:
-        return x
+    return max(0, x)
 
 class Neuron:
     def __init__(self, connections, value=0):
@@ -17,40 +17,44 @@ class Neuron:
         output_value = sum(map(lambda x : x["weight"] * x["neuron"].value, self.connections)) + (bias[0] * bias[1])
         output_value = activation(output_value)
         self.value = output_value
+    def __copy__(self):
+        return Neuron(copy.deepcopy(self.connections), 0)
 
 class Brain:
-    def __init__(self):
-        self.network = [
-            # input layer
-            [
-                Neuron(None),
-                Neuron(None),
-            ],
-        ]
+    def __init__(self, network=None, extra_layer=False):
+        if network == None:
+            self.network = [
+                # input layer
+                [
+                    Neuron(None),
+                    Neuron(None),
+                ],
+            ]
 
-        self.bias = [1, random.randint(1, 10)]
-        layer = []
-        #print(self.network)
-        for i in range(5):
-            connections = list(map(lambda x : {"weight": random.randint(-10, 10), "neuron": x}, self.network[0]))
-            layer.append(Neuron(connections))
+            self.bias = [1, random.randint(1, 10)]
+            layer = []
+            #print(self.network)
+            for i in range(5):
+                connections = list(map(lambda x : {"weight": random.randint(-10, 10), "neuron": x}, self.network[0]))
+                layer.append(Neuron(connections))
 
-        self.network.append(layer)
+            self.network.append(layer)
+            if extra_layer:
+                layer = []
+                #print(self.network)
+                for i in range(5):
+                    connections = list(map(lambda x : {"weight": random.randint(-10, 10), "neuron": x}, self.network[1]))
+                    layer.append(Neuron(connections))
 
-        layer = []
-        #print(self.network)
-        for i in range(5):
-            connections = list(map(lambda x : {"weight": random.randint(-10, 10), "neuron": x}, self.network[0]))
-            layer.append(Neuron(connections))
+                self.network.append(layer)
 
-        self.network.append(layer)
-
-        output_layer = []
-        for i in range(4):
-            connections = list(map(lambda x : {"weight": random.randint(-10, 10), "neuron": x}, self.network[-1]))
-            output_layer.append(Neuron(connections))
-
-        self.network.append(output_layer)
+            output_layer = []
+            for i in range(4):
+                connections = list(map(lambda x : {"weight": random.randint(-10, 10), "neuron": x}, self.network[-1]))
+                output_layer.append(Neuron(connections))
+            self.network.append(output_layer)
+        else:
+            self.network = network
     def think(self, inputs):
         for i, neuron in enumerate(self.network[0]):
             neuron.value = inputs[i]
@@ -63,16 +67,16 @@ class Brain:
         for layer_index in range(1, len(self.network)):
             for neuron in self.network[layer_index]:
                 for connection in neuron.connections:
-                    if random.randint(1, 500) == 1:
+                    if random.randint(1, 350) == 1:
                         connection["weight"] += random.randint(-1, 1)
-        if random.randint(1, 100) == 1:
+        if random.randint(1, 50) == 1:
             self.bias[0] += random.randint(-1, 1)
-        if random.randint(1, 100) == 1:
+        if random.randint(1, 50) == 1:
             self.bias[1] += random.randint(-1, 1)
     def __copy__(self):
-        result = Brain()
-        result.network = copy.deepcopy(self.network)
-        result.bias = self.bias
+        connections = copy.deepcopy(self.network)
+        result = Brain(connections)
+        result.bias = copy.copy(self.bias)
         return result
 
 if __name__ == "__main__":
@@ -88,5 +92,5 @@ if __name__ == "__main__":
         print(list(map(lambda x : x.value, x.network[0])))
         print(list(map(lambda x : x.value, x.network[1])))
         print(list(map(lambda x : x.value, x.network[2])))
-        print(list(map(lambda x : x.value, x.network[3])))
+        #print(list(map(lambda x : x.value, x.network[3])))
         print(result)
