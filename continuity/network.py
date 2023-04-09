@@ -55,9 +55,12 @@ class Brain:
         for layer_index in range(1, len(self.network)):
             for neuron in self.network[layer_index]:
                 for connection in neuron.connections:
-                    connection["weight"] += random.randint(-10, 10)
-        if random.randint(1, 3) == 1:
+                    if random.randint(1, 6) == 1:
+                        connection["weight"] += random.randint(-5, 5)
+        if random.randint(1, 10) == 1:
             self.bias[0] += random.randint(-1, 1)
+        if random.randint(1, 10) == 1:
+            self.bias[1] += random.randint(-1, 1)
     def __copy__(self):
         result = Brain()
         result.network = copy.deepcopy(self.network)

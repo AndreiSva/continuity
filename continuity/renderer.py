@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from . import universe
 import numpy
 import math
+from .import network
 
 class SimEvent:
     SIMTICK = pygame.USEREVENT + 1
@@ -58,6 +59,7 @@ class Renderer:
         physics_clock = pygame.time.Clock()
     
         epoch = 0
+        #pygame.time.set_timer(SimEvent.SIMTICK, 1000)
         pygame.time.set_timer(SimEvent.SIMTICK, 1000)
         pygame.time.set_timer(SimEvent.PHYSICSTICK, 10)
 
@@ -92,7 +94,7 @@ class Renderer:
                         if entity.energy <= 0:
                             self.pellets.append(universe.Pellet(entity.position))
                             self.entities.remove(entity)
-                        elif entity.energy >= 50:
+                        elif entity.energy >= 100:
                             self.entities.append(entity.reproduce(self.settings.mutation_chance))
                             # entity.energy += 100
                     if len(self.pellets) <= self.settings.max_food:
@@ -103,13 +105,18 @@ class Renderer:
                         entity.position[1] += (entity.velocity[1] * physics_clock.get_time())
 
                         # find the closest pellet
-                        best = []
-                        for pellet in self.pellets:
-                            distance = math.sqrt((pellet.position[0]-entity.position[0])**2 + (pellet.position[1]-entity.position[1])**2)
-                            if best == [] or distance < best[0]:
-                                best = [distance, pellet]      
-                        
-                        options = entity.brain.think((best[1].position[0] - entity.position[0], best[1].position[1] - entity.position[1]))
+                        if entity.target not in self.pellets:
+                            best = []
+                            for pellet in self.pellets:
+                                #distance = 10
+                                distance = math.sqrt((pellet.position[0]-entity.position[0])**2 + (pellet.position[1]-entity.position[1])**2)
+                                if best == [] or distance < best[0]:
+                                    best = [distance, pellet]
+                            entity.target = best[1]
+                            
+
+                        options = entity.brain.think((entity.target.position[0] - entity.position[0], entity.target.position[1] - entity.position[1]))
+                        #options = entity.brain.think((0, 0))
                         entity.velocity[0] += options[0].value / 100000
                         entity.velocity[1] += options[1].value / 100000
                         entity.velocity[0] -= options[2].value / 100000
@@ -131,14 +138,15 @@ class Renderer:
                         
                         entity.velocity[0] *= 0.70
                         entity.velocity[1] *= 0.70
+
+                        
+                        for entity2 in self.pellets:
+                            if entity.is_colliding(entity2):
+                                entity.energy += 5
+                                self.pellets.remove(entity2)
                     physics_clock.tick()
 
 
-                for entity in self.entities:
-                    for entity2 in self.pellets:
-                        if entity.is_colliding(entity2):
-                            entity.energy += 1
-                            self.pellets.remove(entity2)
                     
                 self.meta["epoch"] = epoch
                 self.meta["population"] = len(self.entities)

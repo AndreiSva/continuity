@@ -6,13 +6,14 @@ from . import network
 
 class Entity:
     def __init__(self, position = [0, 0], color = (255, 255, 255), size = 1, brain = None):
-        self.energy = 100
+        self.energy = 200
         self.color = color
         self.size = size
         self.genome = {"color": self.color, "size": self.size}
         self.position = position
         self.velocity = [0.0, 0.0]
         self.brain = network.Brain()
+        self.target = None
     def reproduce(self, mutation_rate):
         child_genome = self.genome.copy()
         child_brain = copy.copy(self.brain)
@@ -39,7 +40,7 @@ class Entity:
         
         child = Entity(self.position.copy(), child_genome["color"], child_genome["size"], child_brain)
         child.energy = self.energy // 2 + 1
-        self.energy //= 2 
+        self.energy //= 2
         return child
     def is_colliding(self, other):
         distance = math.sqrt((self.position[0] - other.position[0])**2 + (self.position[1] - other.position[1])**2)
