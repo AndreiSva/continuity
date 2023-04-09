@@ -109,17 +109,11 @@ class Renderer:
                             if best == [] or distance < best[0]:
                                 best = [distance, pellet]      
                         
-                        options = entity.brain.think(best[1].position)
-                        #print(options)
-                        if options[0] == 1:
-                            entity.velocity[0] += 0.2
-                        if options[1] == 1:
-                            entity.velocity[0] -= 0.2
-                        if options[2] == 1:
-                            entity.velocity[1] += 0.2
-                        if options[3] == 1:
-                            entity.velocity[1] -= 0.2
-                        
+                        options = entity.brain.think((best[1].position[0] - entity.position[0], best[1].position[1] - entity.position[1]))
+                        entity.velocity[0] += options[0].value / 100000
+                        entity.velocity[1] += options[1].value / 100000
+                        entity.velocity[0] -= options[2].value / 100000
+                        entity.velocity[1] -= options[3].value / 100000
 
                         if entity.position[0] + entity.size >= self.screen_size:
                             entity.velocity[0] = -abs(entity.velocity[0])
@@ -135,21 +129,8 @@ class Renderer:
                             entity.velocity[1] = abs(entity.velocity[0])
                             continue
                         
-                        if abs(entity.velocity[0]) <= 0.1:
-                            entity.velocity[0] = 0
-                        if abs(entity.velocity[1]) <= 0.1:
-                            entity.velocity[1] = 0
-
-                        if entity.velocity[0] == 0 and entity.velocity[1] == 0:
-                            continue
-
-                        mulx = -1 if entity.velocity[0] > 0 else 1
-                        muly = -1 if entity.velocity[1] > 0 else 1
-
-                        #entity.velocity[0] += (-1 if entity.velocity[0] > 0 else 1) * entity.size * entity.velocity[0]
-                        #entity.velocity[1] += (-1 if entity.velocity[1] > 0 else 1) * entity.size * entity.velocity[1]
-                        entity.velocity[0] += (entity.size * (9.8 * 0.0001)) * mulx
-                        entity.velocity[1] += (entity.size * (9.8 * 0.0001)) * muly
+                        entity.velocity[0] *= 0.70
+                        entity.velocity[1] *= 0.70
                     physics_clock.tick()
 
 

@@ -1,6 +1,7 @@
 #import numpy
 from dataclasses import dataclass
 import random
+import copy
 
 def activation(x):
     if x < 0:
@@ -49,7 +50,19 @@ class Brain:
             for neuron in self.network[layer_index]:
                 neuron.propagate(self.bias)
 
-        return tuple(map(lambda x: 1 if x == max(self.network[-1], key=lambda k: k.value) else 0, self.network[-1]))
+        return tuple(self.network[-1])
+    def mutate(self):
+        for layer_index in range(1, len(self.network)):
+            for neuron in self.network[layer_index]:
+                for connection in neuron.connections:
+                    connection["weight"] += random.randint(-10, 10)
+        if random.randint(1, 3) == 1:
+            self.bias[0] += random.randint(-1, 1)
+    def __copy__(self):
+        result = Brain()
+        result.network = copy.deepcopy(self.network)
+        result.bias = self.bias
+        return result
 
 if __name__ == "__main__":
 

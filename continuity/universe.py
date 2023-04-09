@@ -1,6 +1,7 @@
 import numpy
 import random
 import math
+import copy
 from . import network
 
 class Entity:
@@ -14,6 +15,7 @@ class Entity:
         self.brain = network.Brain()
     def reproduce(self, mutation_rate):
         child_genome = self.genome.copy()
+        child_brain = copy.copy(self.brain)
         if mutation_rate > 0:
             for gene in child_genome.items():
                 if random.randint(1, mutation_rate) == 1:
@@ -31,7 +33,11 @@ class Entity:
                         child_genome[gene[0]] += random.randint(-5, 5)
                         if child_genome[gene[0]] < 0:
                             child_genome[gene[0]] = 0
-        child = Entity(self.position.copy(), child_genome["color"], child_genome["size"], self.brain)
+                # mutate the brain
+                if random.randint(1, mutation_rate) == 1:
+                    child_brain.mutate()
+        
+        child = Entity(self.position.copy(), child_genome["color"], child_genome["size"], child_brain)
         child.energy = self.energy // 2 + 1
         self.energy //= 2 
         return child
