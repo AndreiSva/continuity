@@ -84,13 +84,21 @@ if __name__ == "__main__":
     #i = [10, 20]
     while True:
         x = Brain()
+        z = copy.deepcopy(x)
+        for i in range(100):
+            z.mutate()
         y = [int(x) for x in input("> ").split()]
         #y = [10, 20]
         result = x.think(y)
+
         #if result != (0, 0, 0, 0):
         #    print(result)
         print(list(map(lambda x : x.value, x.network[0])))
         print(list(map(lambda x : x.value, x.network[1])))
         print(list(map(lambda x : x.value, x.network[2])))
-        #print(list(map(lambda x : x.value, x.network[3])))
-        print(result)
+        print()
+        result2 = z.think(y)
+        
+        print(list(map(lambda x : x.value, z.network[0])))
+        print(list(map(lambda x : x.value, z.network[1])))
+        print(list(map(lambda x : x.value, z.network[2])))
