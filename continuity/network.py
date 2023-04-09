@@ -24,11 +24,19 @@ class Brain:
             # input layer
             [
                 Neuron(None),
-                Neuron(None)
+                Neuron(None),
             ],
         ]
 
         self.bias = [1, random.randint(1, 10)]
+        layer = []
+        #print(self.network)
+        for i in range(5):
+            connections = list(map(lambda x : {"weight": random.randint(-10, 10), "neuron": x}, self.network[0]))
+            layer.append(Neuron(connections))
+
+        self.network.append(layer)
+
         layer = []
         #print(self.network)
         for i in range(5):
@@ -55,11 +63,11 @@ class Brain:
         for layer_index in range(1, len(self.network)):
             for neuron in self.network[layer_index]:
                 for connection in neuron.connections:
-                    if random.randint(1, 6) == 1:
-                        connection["weight"] += random.randint(-5, 5)
-        if random.randint(1, 10) == 1:
+                    if random.randint(1, 500) == 1:
+                        connection["weight"] += random.randint(-1, 1)
+        if random.randint(1, 100) == 1:
             self.bias[0] += random.randint(-1, 1)
-        if random.randint(1, 10) == 1:
+        if random.randint(1, 100) == 1:
             self.bias[1] += random.randint(-1, 1)
     def __copy__(self):
         result = Brain()
@@ -80,4 +88,5 @@ if __name__ == "__main__":
         print(list(map(lambda x : x.value, x.network[0])))
         print(list(map(lambda x : x.value, x.network[1])))
         print(list(map(lambda x : x.value, x.network[2])))
+        print(list(map(lambda x : x.value, x.network[3])))
         print(result)
