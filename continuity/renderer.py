@@ -3,6 +3,7 @@ import random
 from dataclasses import dataclass
 from . import universe
 import numpy
+import math
 
 class SimEvent:
     SIMTICK = pygame.USEREVENT + 1
@@ -101,13 +102,22 @@ class Renderer:
                         entity.position[0] += (entity.velocity[0] * physics_clock.get_time())
                         entity.position[1] += (entity.velocity[1] * physics_clock.get_time())
 
-                        if random.randint(1, 5) == 3:
+                        # find the closest pellet
+                        best = []
+                        for pellet in self.pellets:
+                            distance = math.sqrt((pellet.position[0]-entity.position[0])**2 + (pellet.position[1]-entity.position[1])**2)
+                            if best == [] or distance < best[0]:
+                                best = [distance, pellet]      
+                        
+                        options = entity.brain.think(best[1].position)
+                        #print(options)
+                        if options[0] == 1:
                             entity.velocity[0] += 0.2
-                        if random.randint(1, 5) == 3:
+                        if options[1] == 1:
                             entity.velocity[0] -= 0.2
-                        if random.randint(1, 5) == 3:
+                        if options[2] == 1:
                             entity.velocity[1] += 0.2
-                        if random.randint(1, 5) == 3:
+                        if options[3] == 1:
                             entity.velocity[1] -= 0.2
                         
 

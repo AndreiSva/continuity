@@ -1,15 +1,17 @@
 import numpy
 import random
 import math
+from . import network
 
 class Entity:
-    def __init__(self, position = [0, 0], color = (255, 255, 255), size = 1):
+    def __init__(self, position = [0, 0], color = (255, 255, 255), size = 1, brain = None):
         self.energy = 100
         self.color = color
         self.size = size
         self.genome = {"color": self.color, "size": self.size}
         self.position = position
         self.velocity = [0.0, 0.0]
+        self.brain = network.Brain()
     def reproduce(self, mutation_rate):
         child_genome = self.genome.copy()
         if mutation_rate > 0:
@@ -29,7 +31,7 @@ class Entity:
                         child_genome[gene[0]] += random.randint(-5, 5)
                         if child_genome[gene[0]] < 0:
                             child_genome[gene[0]] = 0
-        child = Entity(self.position.copy(), child_genome["color"], child_genome["size"])
+        child = Entity(self.position.copy(), child_genome["color"], child_genome["size"], self.brain)
         child.energy = self.energy // 2 + 1
         self.energy //= 2 
         return child

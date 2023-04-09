@@ -49,7 +49,7 @@ class Brain:
             for neuron in self.network[layer_index]:
                 neuron.propagate(self.bias)
 
-        return tuple(map(lambda x : (1 if x.value == max(self.network[-1], key=lambda y : y.value) else 0), self.network[-1]))
+        return tuple(map(lambda x: 1 if x == max(self.network[-1], key=lambda k: k.value) else 0, self.network[-1]))
 
 if __name__ == "__main__":
 
