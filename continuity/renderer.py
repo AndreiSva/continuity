@@ -4,7 +4,8 @@ from dataclasses import dataclass
 from . import universe
 import numpy
 import math
-from .import network
+from . import network
+import copy
 
 class SimEvent:
     SIMTICK = pygame.USEREVENT + 1
@@ -53,11 +54,18 @@ class Renderer:
             self.screen.blit(text_surface, (0,0 + (item[0] * 20)))
 
         if self.selected_entity != None:
-            text_surface = self.font.render(f"energy: {str(self.selected_entity.energy)[0:5]}", False, (0, 0, 0))
-            text_surface_rect = text_surface.get_rect()
-            text_surface_rect.right = self.screen_size
-            self.screen.blit(text_surface, text_surface_rect)
-        
+            properties = list(self.selected_entity.genome.items())
+            properties = [("name", ("".join([str(hex(i))[1:3] for i in self.selected_entity.color]) + str(hex(self.selected_entity.size))))] + properties
+            properties = [("energy", self.selected_entity.energy)] + properties
+            properties = [("generation", self.selected_entity.generation)] + properties
+            for i, item in enumerate(properties):
+                entity_property = item[0]
+                value = item[1]
+                text_surface = self.font.render(f"{entity_property}: {str(value)[0:5] if type(value) == float else value}", False, (0, 0, 0))
+                text_surface_rect = text_surface.get_rect()
+                text_surface_rect.right = self.screen_size
+                self.screen.blit(text_surface, (text_surface_rect.x, text_surface_rect.y + i * 20))
+
     def main_loop(self):
         self.font = pygame.font.SysFont("Monospace", 13)
         
@@ -105,8 +113,9 @@ class Renderer:
                         if entity.energy <= 0:
                             self.pellets.append(universe.Pellet(entity.position))
                             self.entities.remove(entity)
-                        elif entity.energy >= 10 * (len(self.entities) - 5) - (self.epoch * 5 if self.epoch < 125 else 0):
-                            self.entities.append(entity.reproduce(self.settings.mutation_chance))
+                        elif entity.energy >= 30:
+                            if self.population < 300:
+                                self.entities.append(entity.reproduce(self.settings.mutation_chance))
                             # entity.energy += 100
                     if len(self.pellets) <= self.settings.max_food:
                         self.spawn_food(30)
@@ -126,34 +135,34 @@ class Renderer:
                                 if best == [] or distance < best[0]:
                                     best = [distance, pellet]
                                 entity.target = best[1]
-                        
-                        options = entity.brain.think((entity.target.position[0] - entity.position[0], entity.target.position[1] - entity.position[1]))
+
+                        jitter = random.randint(-100, 100) / 100
+                        options = entity.brain.think((entity.target.position[0] - entity.position[0] + jitter, entity.target.position[1] - entity.position[1] + jitter))
                         #options = entity.brain.think((0, 0))
-                        entity.velocity[0] += options[0].value / 100000
-                        entity.velocity[1] += options[1].value / 100000
-                        entity.velocity[0] -= options[2].value / 100000
-                        entity.velocity[1] -= options[3].value / 100000
+                        entity.position[0] += options[0].value / 3000
+                        entity.position[1] += options[1].value / 3000
+                        entity.position[0] -= options[2].value / 3000
+                        entity.position[1] -= options[3].value / 3000
 
 
-                        entity.energy -= (options[0].value / 100000) + (options[2].value / 100000) + (options[1].value / 100000) + (options[3].value / 100000)
-                        entity.energy -= entity.size / 1000
+                        entity.energy -= (options[0].value / 200000) + (options[2].value / 100000) + (options[1].value / 100000) + (options[3].value / 100000)
 
                         if entity.position[0] + entity.size >= self.screen_size:
-                            entity.velocity[0] = -abs(entity.velocity[0]) - 5
-                            entity.energy -= 10
+                            entity.velocity[0] -= 5
+                            entity.energy -= 18
                             continue
                         elif entity.position[0] - entity.size <= 0:
-                            entity.velocity[0] = abs(entity.velocity[0]) + 5
-                            entity.energy -= 10
+                            entity.velocity[0] =+ 5
+                            entity.energy -= 18
                             continue
 
                         if entity.position[1] + entity.size >= self.screen_size:
-                            entity.velocity[1] = -abs(entity.velocity[0]) - 5
-                            entity.energy -= 10
+                            entity.velocity[1] -= 5
+                            entity.energy -= 18
                             continue
                         elif entity.position[1] - entity.size <= 0:
-                            entity.velocity[1] = abs(entity.velocity[0]) + 5
-                            entity.energy -= 10
+                            entity.velocity[1] += 5
+                            entity.energy -= 18
                             continue
                         
                         entity.velocity[0] *= 0.80
@@ -162,7 +171,7 @@ class Renderer:
                         
                         for entity2 in self.pellets:
                             if entity.is_colliding(entity2):
-                                entity.energy += 10
+                                entity.energy += 15
                                 self.pellets.remove(entity2)
                     physics_clock.tick()
 
