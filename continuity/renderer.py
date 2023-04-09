@@ -31,7 +31,7 @@ class Renderer:
         for i in range(n):
             while True:
                 valid = True
-                position = (random.randint(0, self.screen_size), random.randint(0, self.screen_size))
+                position = (random.randint(50, self.screen_size - 50), random.randint(50, self.screen_size - 50))
                 entity = universe.Pellet(position)
                 for other in self.entities:
                     if entity.is_colliding(other):
@@ -114,11 +114,15 @@ class Renderer:
                             self.pellets.append(universe.Pellet(entity.position))
                             self.entities.remove(entity)
                         elif entity.energy >= 30:
-                            if self.population < 300:
+                            entity.breeding_timer += 1
+                            if self.population < 300 and entity.breeding_timer >= 3:
                                 self.entities.append(entity.reproduce(self.settings.mutation_chance))
+                                entity.breeding_timer = 0
+                        else:
+                            entity.breeding_timer = 0
                             # entity.energy += 100
                     if len(self.pellets) <= self.settings.max_food:
-                        self.spawn_food(30)
+                        self.spawn_food(10)
                 elif event.type == SimEvent.PHYSICSTICK and not paused:
                     for entity in self.entities:
                         entity.position[0] += (entity.velocity[0] * physics_clock.get_time())
@@ -148,21 +152,24 @@ class Renderer:
                         entity.energy -= (options[0].value / 200000) + (options[2].value / 100000) + (options[1].value / 100000) + (options[3].value / 100000)
 
                         if entity.position[0] + entity.size >= self.screen_size:
-                            entity.velocity[0] -= 5
-                            entity.energy -= 18
+                            #entity.velocity[0] -= 5
+                            self.entities.remove(entity)
                             continue
                         elif entity.position[0] - entity.size <= 0:
-                            entity.velocity[0] =+ 5
+                            #entity.velocity[0] =+ 5
                             entity.energy -= 18
+                            self.entities.remove(entity)
                             continue
 
                         if entity.position[1] + entity.size >= self.screen_size:
-                            entity.velocity[1] -= 5
+                            #entity.velocity[1] -= 5
                             entity.energy -= 18
+                            self.entities.remove(entity)
                             continue
                         elif entity.position[1] - entity.size <= 0:
-                            entity.velocity[1] += 5
+                            #entity.velocity[1] += 5
                             entity.energy -= 18
+                            self.entities.remove(entity)
                             continue
                         
                         entity.velocity[0] *= 0.80
@@ -171,7 +178,7 @@ class Renderer:
                         
                         for entity2 in self.pellets:
                             if entity.is_colliding(entity2):
-                                entity.energy += 15
+                                entity.energy += 20
                                 self.pellets.remove(entity2)
                     physics_clock.tick()
 

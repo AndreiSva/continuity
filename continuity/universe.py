@@ -15,6 +15,7 @@ class Entity:
         self.genome = {"color": self.color, "size": self.size, "brain": self.brain}
         self.target = None
         self.generation = 0
+        self.breeding_timer = 0
     def reproduce(self, mutation_rate):
         child_genome = self.genome.copy()
         child_brain = copy.copy(self.brain)
