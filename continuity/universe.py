@@ -6,19 +6,22 @@ from . import network
 
 class Entity:
     def __init__(self, position = [0, 0], color = (255, 255, 255), size = 1, brain = None):
+        if brain == None:
+            brain = network.Brain()
         self.energy = 100
         self.color = color
         self.size = size
         self.position = position
         self.velocity = [0.0, 0.0]
-        self.brain = network.Brain()
+        self.brain = brain
         self.genome = {"color": self.color, "size": self.size, "brain": self.brain}
         self.target = None
         self.generation = 0
         self.breeding_timer = 0
     def reproduce(self, mutation_rate):
-        child_genome = self.genome.copy()
-        child_brain = copy.deepcopy(self.brain)
+        child_genome = copy.copy(self.genome)
+        child_brain = self.brain.__copy__()
+
         if mutation_rate > 0:
             for gene in child_genome.items():
                 if random.randint(1, mutation_rate) == 1:
@@ -33,14 +36,20 @@ class Entity:
                             child_genome[gene[0]][color_index] = 255
                         child_genome[gene[0]] = tuple(child_genome[gene[0]])
                     elif type(gene[1]) == network.Brain:
-                        #child_brain.mutate()
+                        child_brain.mutate()
                         pass
                     else:
                         child_genome[gene[0]] += random.randint(-5, 5)
                         if child_genome[gene[0]] < 0:
                             child_genome[gene[0]] = 0
-        
-        child = Entity(self.position.copy(), child_genome["color"], child_genome["size"], child_brain)
+        child_pos = copy.copy(self.position)
+        child_pos[0] += random.randint(-50, 50)
+        child_pos[1] += random.randint(-50, 50)
+
+        if child_genome["size"] < 1:
+            child_genome["size"] = 1
+            
+        child = Entity(child_pos, child_genome["color"], child_genome["size"], child_brain)
         child.energy = self.energy // 2 + 1
         child.generation = self.generation + 1
         self.energy *= 0.8
@@ -52,7 +61,7 @@ class Entity:
         else:
             return False
     def live(self):
-        self.energy -= self.size / 10
+        self.energy -= self.size / 3
 
 class Pellet(Entity):
     def __init__(self, position):

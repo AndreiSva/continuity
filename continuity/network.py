@@ -3,8 +3,9 @@ from dataclasses import dataclass
 import random
 import copy
 import math
+import pdb
 
-random.seed(0)
+#random.seed(0)
 
 def activation(x):
     return max(0, x)
@@ -21,8 +22,11 @@ class Neuron:
         return Neuron(copy.deepcopy(self.connections), 0)
 
 class Brain:
-    def __init__(self, network=None, extra_layer=False):
+    def __init__(self, network=None):
+        #print(network)
         if network == None:
+            #print("no network, creating new")
+            #pdb.set_trace()
             self.network = [
                 # input layer
                 [
@@ -37,16 +41,7 @@ class Brain:
             for i in range(5):
                 connections = list(map(lambda x : {"weight": random.randint(-10, 10), "neuron": x}, self.network[0]))
                 layer.append(Neuron(connections))
-
             self.network.append(layer)
-            if extra_layer:
-                layer = []
-                #print(self.network)
-                for i in range(5):
-                    connections = list(map(lambda x : {"weight": random.randint(-10, 10), "neuron": x}, self.network[1]))
-                    layer.append(Neuron(connections))
-
-                self.network.append(layer)
 
             output_layer = []
             for i in range(4):
@@ -67,15 +62,42 @@ class Brain:
         for layer_index in range(1, len(self.network)):
             for neuron in self.network[layer_index]:
                 for connection in neuron.connections:
-                    if random.randint(1, 350) == 1:
-                        connection["weight"] += random.randint(-1, 1)
-        if random.randint(1, 50) == 1:
+                    if random.randint(1, 40) == 1:
+                        print("brain mutation moment")
+                        connection["weight"] += random.randint(-5, 5)
+        if random.randint(1, 40) == 1:
             self.bias[0] += random.randint(-1, 1)
-        if random.randint(1, 50) == 1:
+        if random.randint(1, 40) == 1:
             self.bias[1] += random.randint(-1, 1)
     def __copy__(self):
-        connections = copy.deepcopy(self.network)
-        result = Brain(connections)
+        #print("copying brain")
+        network = [
+            # input layer
+            [
+                Neuron(None),
+                Neuron(None),
+            ],
+        ]
+
+        self.bias = [1, random.randint(1, 10)]
+        layer = []
+        #print(self.network)
+        for i in range(5):
+            connections = []
+            for j in range(len(self.network[1][i].connections)):
+                connections.append({"weight": self.network[1][i].connections[j]["weight"], "neuron": network[0][j]})
+            layer.append(Neuron(connections))
+        network.append(layer)
+
+        output_layer = []
+        for i in range(4):
+            connections = []
+            for j in range(len(self.network[-1][i].connections)):
+                connections.append({"weight": self.network[-1][i].connections[j]["weight"], "neuron": network[1][j]})
+            output_layer.append(Neuron(connections))
+        network.append(output_layer)
+
+        result = Brain(network)
         result.bias = copy.copy(self.bias)
         return result
 

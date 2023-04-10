@@ -79,12 +79,12 @@ class Renderer:
 
         for i, layer in enumerate(brain.network):
             for j, neuron in enumerate(layer):
-                color = (255 if neuron.value > 0 else 0, 0, (255 if neuron.value < 0 else 0))
+                color = (255 if neuron.value > 0 else 0, 0, (255 if neuron.value < 1 else 0))
                 pygame.draw.circle(brain_surface, color, (i * 80 + 40, j * 20 + 30), 10)
                 neurons[neuron] = (i * 80 + 40, j * 20 + 30)
                 if neuron.connections != None:
                     for connection in neuron.connections:
-                        color = (255 if connection["neuron"].value > 0 else 0,0, (255 if neuron.value < 1 else 0))
+                        color = (255 if connection["neuron"].value > 0 else 0,0, (255 if connection["neuron"].value < 1 else 0))
                         pygame.draw.line(brain_surface, color, (i * 80 + 40, j * 20 + 30), neurons[connection["neuron"]], width=connection["weight"])
 
         return brain_surface
@@ -138,9 +138,10 @@ class Renderer:
                         if entity.energy <= 0:
                             self.pellets.append(universe.Pellet(entity.position))
                             self.entities.remove(entity)
-                        elif entity.energy >= 30:
+                        elif entity.energy >= 50:
                             entity.breeding_timer += 1
-                            if self.population < 300 and entity.breeding_timer >= 3:
+                            self.population = len(self.entities)
+                            if self.population < 200 and entity.breeding_timer >= 3:
                                 self.entities.append(entity.reproduce(self.settings.mutation_chance))
                                 entity.breeding_timer = 0
                         else:
@@ -203,7 +204,8 @@ class Renderer:
                         
                         for entity2 in self.pellets:
                             if entity.is_colliding(entity2):
-                                entity.energy += 20
+                                #entity.energy += 20
+                                entity.energy += 150 / (entity.size if entity.size > 3 else 3) + (10 if entity.size < 30 else 0)
                                 self.pellets.remove(entity2)
                     physics_clock.tick()
 

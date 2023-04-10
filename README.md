@@ -12,7 +12,7 @@ Continuity is a work in progress artificial life simulator I am developing as pa
 - [X] Genetic Mutation
 - [X] Command Line Interface
 - [ ] Checkpoints / Save files
-- [ ] Neuroevolution
+- [X] Neuroevolution
 - [ ] Polish
 
 Running
