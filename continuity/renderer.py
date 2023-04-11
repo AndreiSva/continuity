@@ -6,6 +6,10 @@ import numpy
 import math
 from . import network
 import copy
+import pickle
+
+pygame.font.init()
+font = pygame.font.SysFont("Monospace", 13)
 
 class SimEvent:
     SIMTICK = pygame.USEREVENT + 1
@@ -22,6 +26,7 @@ class Renderer:
         self.meta = {}
         self.epoch = 0
         self.selected_entity = None
+
         
         self.terrain = pygame.Surface((1000,1000))
         self.terrain.fill((50, 100, 0))
@@ -50,9 +55,10 @@ class Renderer:
         self.screen.blit(self.terrain, pygame.Rect((0, 0), (1000, 1000)))
 
         for item in enumerate(self.meta.items()):
-            text_surface = self.font.render(f"{item[1][0]}: {item[1][1]}", False, (0, 0, 0))
+            text_surface = font.render(f"{item[1][0]}: {item[1][1]}", False, (0, 0, 0))
             self.screen.blit(text_surface, (0,0 + (item[0] * 20)))
-
+        if self.selected_entity not in self.entities:
+            self.selected_entity = None
         if self.selected_entity != None:
             properties = list(self.selected_entity.genome.items())
             properties = [("name", ("".join([str(hex(i))[1:3] for i in self.selected_entity.color]) + str(hex(self.selected_entity.size))))] + properties
@@ -61,7 +67,7 @@ class Renderer:
             for i, item in enumerate(properties):
                 entity_property = item[0]
                 value = item[1]
-                text_surface = self.font.render(f"{entity_property}: {str(value)[0:5] if type(value) == float else value}", False, (0, 0, 0))
+                text_surface = font.render(f"{entity_property}: {str(value)[0:5] if type(value) == float else value}", False, (0, 0, 0))
                 text_surface_rect = text_surface.get_rect()
                 text_surface_rect.right = self.screen_size
                 self.screen.blit(text_surface, (text_surface_rect.x, text_surface_rect.y + i * 20))
@@ -92,8 +98,6 @@ class Renderer:
         #pygame.draw.line()
 
     def main_loop(self):
-        self.font = pygame.font.SysFont("Monospace", 13)
-        
         running = True
         paused = False
         clock = pygame.time.Clock()
@@ -106,7 +110,7 @@ class Renderer:
 
         self.entities = universe.populate(universe.Entity, self.settings.population, 20, self.screen_size)
         #self.entities = universe.populate(universe.Entity, 1, 20, self.screen_size)
-        self.spawn_food(50)
+        self.spawn_food(300)
         self.population = len(self.entities)
         while running:
             for event in pygame.event.get():
@@ -114,23 +118,32 @@ class Renderer:
                     running = False
                 elif event.type == pygame.MOUSEBUTTONDOWN:
                     x, y = pygame.mouse.get_pos()
+                    found = False
                     for entity in self.entities:
                         distance = math.sqrt((entity.position[0] - x)**2 + (entity.position[1] - y)**2)
                         if distance < entity.size:
                             self.selected_entity = entity
+                            found = True
+                    if not found:
+                        self.selected_entity = None
                 elif event.type == pygame.KEYDOWN:
                     print(event)
                     if event.key == pygame.K_p:
                         if not paused:
                             paused = True
-                            #pygame.time.set_timer(SimEvent.SIMTICK, 0)
-                            #pygame.time.set_timer(SimEvent.PHYSICSTICK, 0)
                         else:
                             paused = False
-                            #pygame.time.set_timer(SimEvent.SIMTICK, 1000)
-                            #pygame.time.set_timer(SimEvent.PHYSICSTICK, 10)
                             physics_clock.tick()
                             physics_clock.tick()
+                    elif event.key == pygame.K_s:
+                        objects = {"entities": self.entities, "pellets": self.pellets, "meta": self.meta, "epoch": self.epoch}
+                        pickle.dump(objects, open("checkpoint.pkl", "wb"))
+                    elif event.key == pygame.K_l:
+                        objects = pickle.load(open("checkpoint.pkl", "rb"))
+                        self.entities = objects["entities"]
+                        self.pellets = objects["pellets"]
+                        self.meta = objects["meta"]
+                        self.epoch = objects["epoch"]
                 elif event.type == SimEvent.SIMTICK and not paused:
                     self.epoch += 1
                     for entity in self.entities:
@@ -144,6 +157,7 @@ class Renderer:
                             if self.population < 200 and entity.breeding_timer >= 3:
                                 self.entities.append(entity.reproduce(self.settings.mutation_chance))
                                 entity.breeding_timer = 0
+                            entity.energy *= 0.9
                         else:
                             entity.breeding_timer = 0
                             # entity.energy += 100
@@ -205,11 +219,10 @@ class Renderer:
                         for entity2 in self.pellets:
                             if entity.is_colliding(entity2):
                                 #entity.energy += 20
-                                entity.energy += 150 / (entity.size if entity.size > 3 else 3) + (10 if entity.size < 30 else 0)
+                                entity.energy += -2**(entity.size - 18) + 20
+                                #entity.energy += 150 / (entity.size if entity.size > 3 else 3) + (10 if entity.size < 30 else 0)
                                 self.pellets.remove(entity2)
                     physics_clock.tick()
-
-
                     
                 self.meta["epoch"] = self.epoch
                 self.meta["population"] = len(self.entities)

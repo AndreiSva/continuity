@@ -2,7 +2,7 @@
 "a pretty cool life simulator"
 ![screenshot](screenshot.png)
 
-Continuity is a work in progress artificial life simulator I am developing as part of my high school capstone project. It simulates a group of creatures and demonstrates evolution through natural selection.
+Continuity is an artificial life simulator I am developing as part of my high school capstone project. It simulates a group of creatures and demonstrates neuroevolution through natural selection.
 
 
 ### Roadmap
@@ -11,7 +11,7 @@ Continuity is a work in progress artificial life simulator I am developing as pa
 - [X] Asexual Reproduction
 - [X] Genetic Mutation
 - [X] Command Line Interface
-- [ ] Checkpoints / Save files
+- [X] Checkpoints / Save files
 - [X] Neuroevolution
 - [ ] Polish
 

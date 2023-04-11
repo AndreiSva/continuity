@@ -63,7 +63,6 @@ class Brain:
             for neuron in self.network[layer_index]:
                 for connection in neuron.connections:
                     if random.randint(1, 40) == 1:
-                        print("brain mutation moment")
                         connection["weight"] += random.randint(-5, 5)
         if random.randint(1, 40) == 1:
             self.bias[0] += random.randint(-1, 1)

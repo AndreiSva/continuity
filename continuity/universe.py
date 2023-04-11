@@ -52,7 +52,6 @@ class Entity:
         child = Entity(child_pos, child_genome["color"], child_genome["size"], child_brain)
         child.energy = self.energy // 2 + 1
         child.generation = self.generation + 1
-        self.energy *= 0.8
         return child
     def is_colliding(self, other):
         distance = math.sqrt((self.position[0] - other.position[0])**2 + (self.position[1] - other.position[1])**2)
@@ -61,7 +60,7 @@ class Entity:
         else:
             return False
     def live(self):
-        self.energy -= self.size / 3
+        self.energy -= ((self.size)**2) * 0.01
 
 class Pellet(Entity):
     def __init__(self, position):
