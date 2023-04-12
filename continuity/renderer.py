@@ -154,7 +154,10 @@ class Renderer:
                         elif entity.energy >= 50:
                             entity.breeding_timer += 1
                             self.population = len(self.entities)
-                            if self.population < 200 and entity.breeding_timer >= 3:
+                            pos_diffx = abs(entity.position[0] - entity.last_position[0])
+                            pos_diffy = abs(entity.position[1] - entity.last_position[1])
+                            if (self.population < 200 and entity.breeding_timer >= 3 and
+                                (pos_diffx > 0 or pos_diffy > 0)):
                                 self.entities.append(entity.reproduce(self.settings.mutation_chance))
                                 entity.breeding_timer = 0
                             entity.energy *= 0.9
@@ -183,6 +186,7 @@ class Renderer:
                         jitter = random.randint(-100, 100) / 100
                         options = entity.brain.think((entity.target.position[0] - entity.position[0] + jitter, entity.target.position[1] - entity.position[1] + jitter))
                         #options = entity.brain.think((0, 0))
+                        entity.last_position = copy.copy(entity.position)
                         entity.position[0] += options[0].value / 5000
                         entity.position[1] += options[1].value / 5000
                         entity.position[0] -= options[2].value / 5000

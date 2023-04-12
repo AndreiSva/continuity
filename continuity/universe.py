@@ -12,6 +12,7 @@ class Entity:
         self.color = color
         self.size = size
         self.position = position
+        self.last_position = self.position
         self.velocity = [0.0, 0.0]
         self.brain = brain
         self.genome = {"color": self.color, "size": self.size, "brain": self.brain}
