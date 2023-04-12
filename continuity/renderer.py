@@ -97,6 +97,17 @@ class Renderer:
 
         #pygame.draw.line()
 
+    def target_closest_pellet(self, entity):
+        best = []
+        if len(self.pellets) == 0:
+            self.spawn_food(40)
+        for pellet in self.pellets:
+            #distance = 10
+            distance = math.sqrt((pellet.position[0]-entity.position[0])**2 + (pellet.position[1]-entity.position[1])**2)
+            if best == [] or distance < best[0]:
+                best = [distance, pellet]
+            entity.target = best[1]
+
     def main_loop(self):
         running = True
         paused = False
@@ -147,6 +158,7 @@ class Renderer:
                 elif event.type == SimEvent.SIMTICK and not paused:
                     self.epoch += 1
                     for entity in self.entities:
+                        self.target_closest_pellet(entity)
                         entity.live()
                         if entity.energy <= 0:
                             self.pellets.append(universe.Pellet(entity.position))
@@ -173,15 +185,7 @@ class Renderer:
 
                         # find the closest pellet
                         if entity.target not in self.pellets:
-                            best = []
-                            if len(self.pellets) == 0:
-                                self.spawn_food(40)
-                            for pellet in self.pellets:
-                                #distance = 10
-                                distance = math.sqrt((pellet.position[0]-entity.position[0])**2 + (pellet.position[1]-entity.position[1])**2)
-                                if best == [] or distance < best[0]:
-                                    best = [distance, pellet]
-                                entity.target = best[1]
+                            self.target_closest_pellet(entity)
 
                         jitter = random.randint(-100, 100) / 100
                         options = entity.brain.think((entity.target.position[0] - entity.position[0] + jitter, entity.target.position[1] - entity.position[1] + jitter))
@@ -193,7 +197,7 @@ class Renderer:
                         entity.position[1] -= options[3].value / 5000
 
 
-                        entity.energy -= (options[0].value / 300000) + (options[2].value / 300000) + (options[1].value / 300000) + (options[3].value / 300000)
+                        entity.energy -= (options[0].value / 500000) + (options[2].value / 500000) + (options[1].value / 500000) + (options[3].value / 500000)
 
                         if entity.position[0] + entity.size >= self.screen_size:
                             #entity.velocity[0] -= 5
