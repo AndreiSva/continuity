@@ -30,7 +30,7 @@ class Entity:
                     if type(gene[1]) == tuple:
                         child_genome[gene[0]] = list(child_genome[gene[0]])
                         color_index = random.randint(0,2)
-                        child_genome[gene[0]][color_index] += int(random.triangular(-15, 15))
+                        child_genome[gene[0]][color_index] += int(random.triangular(-30, 30))
                         if child_genome[gene[0]][color_index] < 0:
                             child_genome[gene[0]][color_index] = 0
                         elif child_genome[gene[0]][color_index] > 255:
@@ -40,7 +40,7 @@ class Entity:
                         child_brain.mutate()
                         pass
                     else:
-                        child_genome[gene[0]] += int(random.triangular(-5, 5))
+                        child_genome[gene[0]] += int(random.triangular(-10, 10))
                         if child_genome[gene[0]] < 0:
                             child_genome[gene[0]] = 0
         child_pos = copy.copy(self.position)
