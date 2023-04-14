@@ -63,7 +63,7 @@ class Brain:
             for neuron in self.network[layer_index]:
                 for connection in neuron.connections:
                     if random.randint(1, 40) == 1:
-                        connection["weight"] += random.randint(-5, 5)
+                        connection["weight"] += random.triangular(-8, 8)
         if random.randint(1, 40) == 1:
             self.bias[0] += random.randint(-1, 1)
         if random.randint(1, 40) == 1:
