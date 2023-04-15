@@ -91,7 +91,7 @@ class Renderer:
                 if neuron.connections != None:
                     for connection in neuron.connections:
                         color = (255 if connection["neuron"].value > 0 else 0,0, (255 if connection["neuron"].value < 1 else 0))
-                        pygame.draw.line(brain_surface, color, (i * 80 + 40, j * 20 + 30), neurons[connection["neuron"]], width=connection["weight"])
+                        pygame.draw.line(brain_surface, color, (i * 80 + 40, j * 20 + 30), neurons[connection["neuron"]], width=int(connection["weight"]))
 
         return brain_surface
 
@@ -146,6 +146,9 @@ class Renderer:
                             paused = False
                             physics_clock.tick()
                             physics_clock.tick()
+                    elif event.key == pygame.K_r:
+                        self.epoch = 0
+                        self.entities = universe.populate(universe.Entity, self.settings.population, 20, self.screen_size)
                     elif event.key == pygame.K_s:
                         objects = {"entities": self.entities, "pellets": self.pellets, "meta": self.meta, "epoch": self.epoch}
                         pickle.dump(objects, open("checkpoint.pkl", "wb"))
@@ -157,6 +160,10 @@ class Renderer:
                         self.epoch = objects["epoch"]
                 elif event.type == SimEvent.SIMTICK and not paused:
                     self.epoch += 1
+                    self.population = len(self.entities)
+                    if self.population <= 0:
+                        self.epoch = 0
+                        self.entities = universe.populate(universe.Entity, self.settings.population, 20, self.screen_size)
                     for entity in self.entities:
                         self.target_closest_pellet(entity)
                         entity.live()
@@ -165,7 +172,6 @@ class Renderer:
                             self.entities.remove(entity)
                         elif entity.energy >= 50:
                             entity.breeding_timer += 1
-                            self.population = len(self.entities)
                             pos_diffx = abs(entity.position[0] - entity.last_position[0])
                             pos_diffy = abs(entity.position[1] - entity.last_position[1])
                             if (self.population < 200 and entity.breeding_timer >= 3 and
@@ -177,7 +183,7 @@ class Renderer:
                             entity.breeding_timer = 0
                             # entity.energy += 100
                     if len(self.pellets) <= self.settings.max_food:
-                        self.spawn_food(10)
+                        self.spawn_food(int(10 * (-0.01 * (self.epoch)** 2 + 10 if self.epoch < 100 else 1)))
                 elif event.type == SimEvent.PHYSICSTICK and not paused:
                     for entity in self.entities:
                         entity.position[0] += (entity.velocity[0] * physics_clock.get_time())
@@ -227,7 +233,7 @@ class Renderer:
                         for entity2 in self.pellets:
                             if entity.is_colliding(entity2):
                                 #entity.energy += 20
-                                entity.energy += -2**(entity.size - 18) + 20
+                                entity.energy += (-0.002 * entity.size**3) + 25
                                 #entity.energy += 150 / (entity.size if entity.size > 3 else 3) + (10 if entity.size < 30 else 0)
                                 self.pellets.remove(entity2)
                     physics_clock.tick()
