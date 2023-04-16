@@ -100,13 +100,23 @@ class Renderer:
     def target_closest_pellet(self, entity):
         best = []
         if len(self.pellets) == 0:
-            self.spawn_food(40)
-        for pellet in self.pellets:
-            #distance = 10
+            self.spawn_food(1)
+        options = []
+        if entity.genome["smart-nose"]:
+            for pellet in self.pellets:
+                taken = False
+                for other in self.entities:
+                    if other.target == pellet:
+                        taken = True
+                if taken == False:
+                    options.append(pellet)
+        if len(options) == 0:
+            options = self.pellets
+        for pellet in options:
             distance = math.sqrt((pellet.position[0]-entity.position[0])**2 + (pellet.position[1]-entity.position[1])**2)
             if best == [] or distance < best[0]:
                 best = [distance, pellet]
-            entity.target = best[1]
+        entity.target = best[1]
 
     def main_loop(self):
         running = True
@@ -165,7 +175,7 @@ class Renderer:
                         self.epoch = 0
                         self.entities = universe.populate(universe.Entity, self.settings.population, 20, self.screen_size)
                     for entity in self.entities:
-                        self.target_closest_pellet(entity)
+                        #self.target_closest_pellet(entity)
                         entity.live()
                         if entity.energy <= 0:
                             self.pellets.append(universe.Pellet(entity.position))
@@ -183,7 +193,7 @@ class Renderer:
                             entity.breeding_timer = 0
                             # entity.energy += 100
                     if len(self.pellets) <= self.settings.max_food:
-                        self.spawn_food(int(10 * (-0.01 * (self.epoch)** 2 + 10 if self.epoch < 100 else 1)))
+                        self.spawn_food(10)
                 elif event.type == SimEvent.PHYSICSTICK and not paused:
                     for entity in self.entities:
                         entity.position[0] += (entity.velocity[0] * physics_clock.get_time())
@@ -203,7 +213,7 @@ class Renderer:
                         entity.position[1] -= options[3].value / 5000
 
 
-                        entity.energy -= (options[0].value / 500000) + (options[2].value / 500000) + (options[1].value / 500000) + (options[3].value / 500000)
+                        entity.energy -= (options[0].value / 800000) + (options[2].value / 800000) + (options[1].value / 800000) + (options[3].value / 800000)
 
                         if entity.position[0] + entity.size >= self.screen_size:
                             #entity.velocity[0] -= 5
@@ -233,7 +243,7 @@ class Renderer:
                         for entity2 in self.pellets:
                             if entity.is_colliding(entity2):
                                 #entity.energy += 20
-                                entity.energy += (-0.002 * entity.size**3) + 25
+                                entity.energy += ((-0.002 * entity.size**3) + 25) if entity.size <= 23 else 0
                                 #entity.energy += 150 / (entity.size if entity.size > 3 else 3) + (10 if entity.size < 30 else 0)
                                 self.pellets.remove(entity2)
                     physics_clock.tick()

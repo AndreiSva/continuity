@@ -15,7 +15,7 @@ class Entity:
         self.last_position = self.position
         self.velocity = [0.0, 0.0]
         self.brain = brain
-        self.genome = {"color": self.color, "size": self.size, "brain": self.brain}
+        self.genome = {"color": self.color, "size": self.size, "brain": self.brain, "smart-nose": random.choice([True, False])}
         self.target = None
         self.generation = 0
         self.breeding_timer = 0
@@ -39,6 +39,8 @@ class Entity:
                     elif type(gene[1]) == network.Brain:
                         child_brain.mutate()
                         pass
+                    elif type(gene[1]) == bool:
+                        child_genome[gene[0]] = not gene[1]
                     else:
                         child_genome[gene[0]] += int(random.triangular(-10, 10))
                         if child_genome[gene[0]] < 0:
