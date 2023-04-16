@@ -65,7 +65,7 @@ class Entity:
 
 class Pellet(Entity):
     def __init__(self, position):
-        super().__init__(position, (0, 255, 0), 2)
+        super().__init__(position, (255, 128, 0), 2)
 
 def populate(e, n, distance, size):
     x = []

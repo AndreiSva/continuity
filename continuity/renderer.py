@@ -49,7 +49,7 @@ class Renderer:
         
     def render_screen(self):
         # clear the screen
-        self.terrain.fill((50, 150, 0))
+        self.terrain.fill((50, 50, 200))
         for entity in self.entities + self.pellets:
             pygame.draw.circle(self.terrain, entity.color, entity.position, entity.size)
         self.screen.blit(self.terrain, pygame.Rect((0, 0), (1000, 1000)))
