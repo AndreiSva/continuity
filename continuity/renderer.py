@@ -176,6 +176,8 @@ class Renderer:
                         if event.key == pygame.K_k and self.selected_entity != None:
                             self.entities.remove(self.selected_entity)
                             self.selected_entity = None
+                        elif event.key == pygame.K_e and self.selected_entity != None:
+                            self.selected_entity.energy += 50
                 elif event.type == SimEvent.SIMTICK and not paused:
                     self.epoch += 1
                     self.population = len(self.entities)
