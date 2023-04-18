@@ -40,7 +40,8 @@ class Entity:
                         child_brain.mutate()
                         pass
                     elif type(gene[1]) == bool:
-                        child_genome[gene[0]] = not gene[1]
+                        if random.randint(1, 2) == 1:
+                            child_genome[gene[0]] = not gene[1]
                     else:
                         child_genome[gene[0]] += int(random.triangular(-10, 10))
                         if child_genome[gene[0]] < 0:
