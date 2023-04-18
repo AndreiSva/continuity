@@ -27,7 +27,6 @@ class Renderer:
         self.epoch = 0
         self.selected_entity = None
 
-        
         self.terrain = pygame.Surface((1000,1000))
         self.terrain.fill((50, 100, 0))
 
@@ -139,14 +138,18 @@ class Renderer:
                     running = False
                 elif event.type == pygame.MOUSEBUTTONDOWN:
                     x, y = pygame.mouse.get_pos()
-                    found = False
-                    for entity in self.entities:
-                        distance = math.sqrt((entity.position[0] - x)**2 + (entity.position[1] - y)**2)
-                        if distance < entity.size:
-                            self.selected_entity = entity
-                            found = True
-                    if not found:
-                        self.selected_entity = None
+                    if event.button == 1:
+                        found = False
+                        for entity in self.entities:
+                            distance = math.sqrt((entity.position[0] - x)**2 + (entity.position[1] - y)**2)
+                            if distance < entity.size:
+                                self.selected_entity = entity
+                                found = True
+                        if not found:
+                            self.selected_entity = None
+                    elif self.settings.impure:
+                        self.pellets.append(universe.Pellet((x, y)))
+                            
                 elif event.type == pygame.KEYDOWN:
                     print(event)
                     if event.key == pygame.K_p:
@@ -168,6 +171,11 @@ class Renderer:
                         self.pellets = objects["pellets"]
                         self.meta = objects["meta"]
                         self.epoch = objects["epoch"]
+
+                    if self.settings.impure:
+                        if event.key == pygame.K_k and self.selected_entity != None:
+                            self.entities.remove(self.selected_entity)
+                            self.selected_entity = None
                 elif event.type == SimEvent.SIMTICK and not paused:
                     self.epoch += 1
                     self.population = len(self.entities)
