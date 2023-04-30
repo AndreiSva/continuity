@@ -4,6 +4,7 @@ import random
 import copy
 import math
 import pdb
+import numpy
 
 #random.seed(0)
 
@@ -62,12 +63,12 @@ class Brain:
         for layer_index in range(1, len(self.network)):
             for neuron in self.network[layer_index]:
                 for connection in neuron.connections:
-                    if random.randint(1, 40) == 1:
-                        connection["weight"] += random.triangular(-8, 8)
-        if random.randint(1, 40) == 1:
-            self.bias[0] += random.randint(-1, 1)
-        if random.randint(1, 40) == 1:
-            self.bias[1] += random.randint(-1, 1)
+                    if random.randint(1, 20) == 1:
+                        connection["weight"] += float(numpy.random.normal(loc=0, scale=3.5))
+        if random.randint(1, 20) == 1:
+            self.bias[0] += float(numpy.random.normal(loc=0, scale=1))
+        if random.randint(1, 20) == 1:
+            self.bias[1] += float(numpy.random.normal(loc=0, scale=1))
     def __copy__(self):
         #print("copying brain")
         network = [
