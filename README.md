@@ -2,18 +2,17 @@
 "a pretty cool life simulator"
 ![screenshot](screenshot.png)
 
-Continuity is an artificial life simulator I developed as part of my high school capstone project. It simulates a group of creatures and demonstrates neuroevolution through natural selection.
+Continuity is an artificial life simulator I developed as part of my high school capstone project. It simulates a group of creatures and demonstrates neuroevolution through natural selection. Watch as seemingly thoughtless creatures evolve into highly efficient survival machines.
 
 
-### Roadmap
-- [X] Physics Simulation
+### Features
 - [X] Creature Simulation
 - [X] Asexual Reproduction
 - [X] Genetic Mutation
 - [X] Command Line Interface
 - [X] Checkpoints / Save files
 - [X] Neuroevolution
-- [ ] Polish
+
 
 Running
 -------
