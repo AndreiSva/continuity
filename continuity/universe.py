@@ -2,13 +2,15 @@ import numpy
 import random
 import math
 import copy
+import numpy
 from . import network
 
 class Entity:
-    def __init__(self, position = [0, 0], color = (255, 255, 255), size = 1, brain = None):
+    def __init__(self, position = [0, 0], color = (255, 255, 255), size = 1, brain = None, epoch = 0):
         if brain == None:
             brain = network.Brain()
         self.energy = 100
+        self.birth_epoch = epoch
         self.color = color
         self.size = size
         self.position = position
@@ -19,7 +21,7 @@ class Entity:
         self.target = None
         self.generation = 0
         self.breeding_timer = 0
-    def reproduce(self, mutation_rate):
+    def reproduce(self, mutation_rate, epoch):
         child_genome = copy.copy(self.genome)
         child_brain = self.brain.__copy__()
 
@@ -51,7 +53,7 @@ class Entity:
         if child_genome["size"] < 1:
             child_genome["size"] = 1
             
-        child = Entity(child_pos, child_genome["color"], child_genome["size"], child_brain)
+        child = Entity(child_pos, child_genome["color"], child_genome["size"], child_brain, epoch)
         child.energy = self.energy // 2 + 1
         child.generation = self.generation + 1
         return child
@@ -61,8 +63,9 @@ class Entity:
             return True
         else:
             return False
-    def live(self):
-        self.energy -= ((self.size)**2) * 0.01
+    def live(self, epoch):
+        age = epoch - self.birth_epoch
+        self.energy -= (((self.size)**2) + 50) / ((40 * math.log((age + 1)/100) + 200))
 
 class Pellet(Entity):
     def __init__(self, position):

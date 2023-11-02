@@ -61,6 +61,7 @@ class Renderer:
         if self.selected_entity != None:
             properties = list(self.selected_entity.genome.items())
             properties = [("name", ("".join([str(hex(i))[1:3] for i in self.selected_entity.color]) + str(hex(self.selected_entity.size))))] + properties
+            properties = [("age", self.epoch - self.selected_entity.birth_epoch)] + properties
             properties = [("energy", self.selected_entity.energy)] + properties
             properties = [("generation", self.selected_entity.generation)] + properties
             for i, item in enumerate(properties):
@@ -186,7 +187,7 @@ class Renderer:
                         self.entities = universe.populate(universe.Entity, self.settings.population, 20, self.screen_size)
                     for entity in self.entities:
                         #self.target_closest_pellet(entity)
-                        entity.live()
+                        entity.live(self.epoch)
                         if entity.energy <= 0:
                             self.pellets.append(universe.Pellet(entity.position))
                             self.entities.remove(entity)
@@ -196,7 +197,7 @@ class Renderer:
                             pos_diffy = abs(entity.position[1] - entity.last_position[1])
                             if (self.population < 200 and entity.breeding_timer >= 3 and
                                 (pos_diffx > 0 or pos_diffy > 0)):
-                                self.entities.append(entity.reproduce(self.settings.mutation_chance))
+                                self.entities.append(entity.reproduce(self.settings.mutation_chance, self.epoch))
                                 entity.breeding_timer = 0
                             entity.energy *= 0.9
                         else:
