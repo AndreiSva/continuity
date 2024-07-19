@@ -19,3 +19,6 @@ def main():
     screen = pygame.display.set_mode([1000, 1000])
     main_renderer = renderer.Renderer(screen, args)
     main_renderer.main_loop()
+
+if __name__ == "__main__":
+    main()
